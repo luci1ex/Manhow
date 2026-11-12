@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مترجم المانهوا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Tajawal:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0e12; --panel:#16181f; --line:#262a35; --ink:#f1efe9; --mute:#9a9fad;
+  --accent:#f5b544; --accent-ink:#1a1305; --err:#ff7a6b; --ok:#7bd88f;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+.top{max-width:760px;margin:0 auto;padding:22px 16px 6px}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{background:var(--accent);color:var(--accent-ink);font:800 13px/1 "Tajawal",sans-serif;padding:7px 9px 5px;border-radius:50% 50% 50% 8px}
+h1{font-size:22px;margin:0;font-weight:700;letter-spacing:0}
+.sub{margin:6px 0 0;color:var(--mute);font-size:14px}
+main{max-width:760px;margin:0 auto;padding:12px 16px 110px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:11px;margin-bottom:12px}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--mute);font:500 15px/1 inherit;font-family:inherit;padding:12px 8px;border-radius:8px;cursor:pointer;min-height:44px}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:1.5px dashed #3a4050;border-radius:12px;padding:26px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:#1b1d25}
+.drop strong{font-size:16px}
+.drop span{color:var(--mute);font-size:13px}
+input[type=url],input[type=password],select{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:16px;min-height:46px}
+input:focus-visible,select:focus-visible,button:focus-visible,.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.note{background:#1d1a12;border:1px solid #4a3b17;color:#f0dcae;border-radius:10px;padding:12px;font-size:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.row:has(#keyField[hidden]){grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--mute)}
+.primary{width:100%;margin-top:12px;appearance:none;border:0;border-radius:11px;background:var(--accent);color:var(--accent-ink);font:700 17px/1 inherit;font-family:inherit;padding:15px;min-height:50px;cursor:pointer;transition:filter .15s}
+.primary:hover{filter:brightness(1.07)}
+.primary:disabled{opacity:.5;cursor:not-allowed}
+.status{min-height:22px;margin-top:10px;font-size:14px;color:var(--mute)}
+.status.err{color:var(--err)} .status.ok{color:var(--ok)}
+.reader{margin:16px -16px 0;direction:ltr}
+@media(min-width:760px){.reader{margin-inline:0}}
+.slice{position:relative;container-type:inline-size;background:#000;line-height:0}
+.slice img{display:block;width:100%;height:auto}
+.slice.working::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(245,181,68,.16) 50%,transparent 70%);background-size:220% 100%;animation:sweep 1.3s linear infinite;pointer-events:none}
+@keyframes sweep{from{background-position:120% 0}to{background-position:-120% 0}}
+@media(prefers-reduced-motion:reduce){.slice.working::after{animation:none;background:rgba(245,181,68,.1)}}
+.bub{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;direction:rtl;padding:1.2cqw;border-radius:42%;font-family:"Tajawal","IBM Plex Sans Arabic",sans-serif;font-weight:700;line-height:1.35;cursor:pointer;transition:opacity .15s;overflow:hidden}
+.bub.box{border-radius:6px}
+.bub span{display:block;max-width:100%;overflow-wrap:anywhere}
+.bub.grow{height:auto!important;overflow:visible;border-radius:14px}
+.bub.peek{opacity:0}
+.reader.orig .bub{opacity:0;pointer-events:none}
+.retry{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:2;border:0;border-radius:99px;background:var(--err);color:#200;font:700 14px/1 "IBM Plex Sans Arabic",sans-serif;padding:11px 16px;min-height:44px;cursor:pointer;direction:rtl}
+.dock{position:fixed;inset-inline:0;bottom:0;display:flex;gap:8px;justify-content:center;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(13,14,18,.92) 40%);z-index:5}
+.dock button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:500 15px/1 inherit;font-family:inherit;padding:13px 18px;min-height:46px;border-radius:99px;cursor:pointer}
+.dock button:hover{border-color:var(--accent)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark" aria-hidden="true">عربي</span><h1>مترجم المانهوا</h1></div>
+  <p class="sub">يقرأ النص الإنكليزي ويكتب ترجمته العربية داخل الفقاعة نفسها.</p>
+</header>
+<main>
+  <section class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabUp" aria-selected="true" aria-controls="paneUp">رفع صور</button>
+      <button role="tab" id="tabLink" aria-selected="false" aria-controls="paneLink">رابط فصل</button>
+    </div>
+    <div id="paneUp" role="tabpanel">
+      <label class="drop" id="drop">
+        <input type="file" id="files" accept="image/*" multiple hidden>
+        <strong>اختر صور الفصل</strong>
+        <span id="fileInfo">صفحات أو سكرينشوتات. تترتب حسب اسم الملف.</span>
+      </label>
+    </div>
+    <div id="paneLink" role="tabpanel" hidden>
+      <div id="linkOff" class="note" hidden>وضع الرابط يحتاج السيرفر. شغّل الملف server.py على استضافتك وافتح عنوانه، وهذا التبويب يشتغل هناك. هنا استخدم «رفع صور».</div>
+      <label class="field" id="linkOn">رابط صفحة الفصل
+        <input type="url" id="url" dir="ltr" inputmode="url" placeholder="https://…" autocomplete="off">
+      </label>
+    </div>
+    <div class="row">
+      <label class="field">أسلوب الترجمة
+        <select id="style"><option value="msa">فصحى مبسطة</option><option value="iq">لهجة عراقية</option></select>
+      </label>
+      <label class="field" id="keyField" hidden>كلمة سر السيرفر
+        <input type="password" id="key" autocomplete="off">
+      </label>
+    </div>
+    <button id="go" class="primary">ترجم</button>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+  </section>
+  <section id="reader" class="reader" aria-label="الفصل المترجم"></section>
+</main>
+<div class="dock" id="dock" hidden>
+  <button id="toggle" aria-pressed="false">عرض الأصل</button>
+  <button id="stop">إيقاف</button>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const enc = encodeURIComponent;
+let mode = 'none';        // 'artifact' | 'server' | 'none'
+let sample = null;        // Claude capability inside the artifact
+let serverCanTranslate = false;
+let tab = 'up';
+let busy = false;
+let abortCtl = null;
+
+function setStatus(t, cls){ const s = $('#status'); s.textContent = t || ''; s.className = 'status' + (cls ? ' ' + cls : ''); }
+
+/* ---------- where are we running ---------- */
+const ready = (async () => {
+  for (let i = 0; i < 12; i++) {
+    if (window.claude && typeof window.claude.use === 'function') { mode = 'artifact'; break; }
+    if (i === 1 && location.protocol.startsWith('http')) {
+      try {
+        const r = await fetch('api/ping', {cache: 'no-store'});
+        if (r.ok) { const j = await r.json(); if (j && j.ok) { mode = 'server'; serverCanTranslate = !!j.translate; $('#keyField').hidden = !j.auth; break; } }
+      } catch (e) {}
+    }
+    await sleep(150);
+  }
+  if (mode === 'artifact') {
+    try { sample = await window.claude.use('sample'); } catch (e) { sample = null; }
+  }
+  $('#linkOff').hidden = mode === 'server';
+  $('#linkOn').hidden = mode !== 'server';
+  try { const k = localStorage.getItem('mt_key'); if (k) $('#key').value = k; } catch (e) {}
+})();
+
+/* ---------- tabs & inputs ---------- */
+function selectTab(t){
+  tab = t;
+  $('#tabUp').setAttribute('aria-selected', t === 'up');
+  $('#tabLink').setAttribute('aria-selected', t === 'link');
+  $('#paneUp').hidden = t !== 'up';
+  $('#paneLink').hidden = t !== 'link';
+  $('#go').textContent = t === 'up' ? 'ترجم' : 'اجلب الفصل وترجمه';
+}
+$('#tabUp').onclick = () => selectTab('up');
+$('#tabLink').onclick = () => selectTab('link');
+
+let picked = [];
+function setFiles(list){
+  picked = [...list].filter(f => f.type.startsWith('image/'))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+  $('#fileInfo').textContent = picked.length ? picked.length + ' صورة جاهزة' : 'صفحات أو سكرينشوتات. تترتب حسب اسم الملف.';
+}
+$('#files').onchange = e => setFiles(e.target.files);
+const drop = $('#drop');
+['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => setFiles(e.dataTransfer.files));
+
+$('#toggle').onclick = () => {
+  const on = $('#reader').classList.toggle('orig');
+  $('#toggle').textContent = on ? 'عرض الترجمة' : 'عرض الأصل';
+  $('#toggle').setAttribute('aria-pressed', on);
+};
+$('#stop').onclick = () => { if (abortCtl) abortCtl.abort(); };
+
+/* ---------- server helper ---------- */
+async function api(path, opts = {}){
+  const key = $('#key').value;
+  try { localStorage.setItem('mt_key', key); } catch (e) {}
+  const r = await fetch(path, {...opts, headers: {...(opts.headers || {}), 'X-Key': key}});
+  if (r.status === 401) throw new Error('كلمة سر السيرفر غير صحيحة.');
+  if (!r.ok) {
+    let m = 'خطأ ' + r.status;
+    try { const j = await r.json(); if (j.error) m = j.error; } catch (e) {}
+    throw new Error(m);
+  }
+  return r;
+}
+
+/* ---------- image handling ---------- */
+function loadImg(blob){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => { URL.revokeObjectURL(img.src); rej(new Error('تعذّر فتح الصورة')); };
+    img.src = URL.createObjectURL(blob);
+  });
+}
+
+// Cut tall webtoon strips into readable pieces, preferring blank gutters between panels.
+function planCuts(img){
+  const W = img.naturalWidth, H = img.naturalHeight;
+  const target = W * 1.5, min = W * 0.9, max = W * 1.9;
+  if (H <= max) return [{y: 0, h: H}];
+  const sw = 48, sh = Math.max(1, Math.min(Math.round(H * sw / W), 8000));
+  const c = document.createElement('canvas'); c.width = sw; c.height = sh;
+  const ctx = c.getContext('2d', {willReadFrequently: true});
+  let data = null;
+  try { ctx.drawImage(img, 0, 0, sw, sh); data = ctx.getImageData(0, 0, sw, sh).data; } catch (e) {}
+  const ry = sh / H;
+  const uniform = row => {
+    if (!data || row < 0 || row >= sh) return false;
+    let lo = 255, hi = 0;
+    for (let x = 0; x < sw; x++) {
+      const i = (row * sw + x) * 4, l = (data[i] * 3 + data[i + 1] * 6 + data[i + 2]) / 10;
+      if (l < lo) lo = l; if (l > hi) hi = l;
+    }
+    return hi - lo < 14;
+  };
+  const cuts = []; let y = 0;
+  while (H - y > max) {
+    let best = -1, bestD = Infinity;
+    const step = Math.max(1, 1 / ry);
+    for (let yy = y + min; yy <= y + max; yy += step) {
+      if (uniform(Math.floor(yy * ry))) { const d = Math.abs(yy - (y + target)); if (d < bestD) { bestD = d; best = yy; } }
+    }
+    const cut = Math.round(best > 0 ? best : y + target);
+    cuts.push({y, h: cut - y}); y = cut;
+  }
+  cuts.push({y, h: H - y});
+  c.width = 0;
+  return cuts;
+}
+
+function toBlob(canvas, q){ return new Promise(res => canvas.toBlob(res, 'image/jpeg', q)); }
+
+async function makeSlice(img, cut){
+  const W = img.naturalWidth;
+  const cw = Math.min(W, 1000), ch = Math.max(1, Math.round(cut.h * cw / W));
+  const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+  c.getContext('2d').drawImage(img, 0, cut.y, W, cut.h, 0, 0, cw, ch);
+  const blob = await toBlob(c, 0.88);
+  // small copy kept for sampling bubble background colours
+  const tw = Math.min(160, cw), th = Math.max(1, Math.round(ch * tw / cw));
+  const t = document.createElement('canvas'); t.width = tw; t.height = th;
+  const tctx = t.getContext('2d', {willReadFrequently: true});
+  tctx.drawImage(c, 0, 0, tw, th);
+  const thumb = {w: tw, h: th, d: tctx.getImageData(0, 0, tw, th).data};
+  c.width = 0; t.width = 0;
+  const el = document.createElement('div'); el.className = 'slice';
+  const pic = document.createElement('img'); pic.alt = ''; pic.src = URL.createObjectURL(blob);
+  pic.width = cw; pic.height = ch;
+  el.append(pic);
+  return {el, blob, thumb};
+}
+
+function dominant(t, x1, y1, x2, y2){
+  const ax = Math.max(0, Math.floor(x1 / 100 * t.w)), bx = Math.min(t.w, Math.ceil(x2 / 100 * t.w));
+  const ay = Math.max(0, Math.floor(y1 / 100 * t.h)), by = Math.min(t.h, Math.ceil(y2 / 100 * t.h));
+  const m = new Map(); let best = null;
+  for (let y = ay; y < by; y++) for (let x = ax; x < bx; x++) {
+    const i = (y * t.w + x) * 4, k = (t.d[i] >> 4) << 8 | (t.d[i + 1] >> 4) << 4 | (t.d[i + 2] >> 4);
+    let e = m.get(k); if (!e) { e = [0, 0, 0, 0]; m.set(k, e); }
+    e[0]++; e[1] += t.d[i]; e[2] += t.d[i + 1]; e[3] += t.d[i + 2];
+    if (!best || e[0] > best[0]) best = e;
+  }
+  if (!best) return {css: '#fff', lum: 255};
+  const r = best[1] / best[0], g = best[2] / best[0], b = best[3] / best[0];
+  return {css: `rgb(${r | 0},${g | 0},${b | 0})`, lum: (r * 3 + g * 6 + b) / 10};
+}
+
+function fit(d){
+  const s = d.firstChild; let f = 4.6;
+  for (; f >= 1.7; f -= 0.2) {
+    d.style.fontSize = f.toFixed(1) + 'cqw';
+    if (s.offsetHeight <= d.clientHeight * 0.9 && s.scrollWidth <= d.clientWidth) return;
+  }
+  d.style.fontSize = '1.8cqw'; d.style.minHeight = d.style.height; d.classList.add('grow');
+}
+
+function renderBubbles(slice, list){
+  let n = 0;
+  for (const b of list) {
+    if (!b || !Array.isArray(b.box) || b.box.length < 4 || typeof b.ar !== 'string' || !b.ar.trim()) continue;
+    let [x1, y1, x2, y2] = b.box.map(v => Math.min(100, Math.max(0, Number(v) / 10)));
+    if (!(x2 - x1 > 1 && y2 - y1 > 0.5)) continue;
+    const d = document.createElement('div');
+    d.className = 'bub' + (b.t === 'box' ? ' box' : '');
+    d.style.left = x1 + '%'; d.style.top = y1 + '%'; d.style.width = (x2 - x1) + '%'; d.style.height = (y2 - y1) + '%';
+    const col = dominant(slice.thumb, x1, y1, x2, y2);
+    d.style.background = col.css; d.style.color = col.lum > 140 ? '#111' : '#fff';
+    const s = document.createElement('span'); s.textContent = b.ar.trim(); d.append(s);
+    d.title = 'اضغط لرؤية الأصل';
+    d.onclick = () => d.classList.toggle('peek');
+    slice.el.append(d); fit(d); n++;
+  }
+  return n;
+}
+
+/* ---------- translation ---------- */
+function buildPrompt(){
+  const style = $('#style').value === 'iq'
+    ? 'natural spoken Iraqi Arabic dialect'
+    : 'simple, fluent Modern Standard Arabic';
+  return 'This image is one vertical slice of a comic page (manhwa / manga / webtoon) lettered in English. ' +
+    'Find every speech bubble, thought bubble, narration box and standalone caption that has readable text. ' +
+    'For each one give: "box" = the bounding box of the lettering area inside it (cover all of the original text, not the bubble tail), ' +
+    'as integers 0-1000 normalised to this image, [x1,y1,x2,y2] with x from the left edge and y from the top edge; ' +
+    '"t" = "bubble" for rounded bubbles or "box" for rectangular narration boxes and captions; ' +
+    '"ar" = a translation of that text into ' + style + ', written the way a comic would say it, with names transliterated. ' +
+    'Skip sound effects, watermarks, site credits and page numbers. ' +
+    'Reply with ONLY a JSON array and nothing else, for example [{"box":[120,80,460,210],"t":"bubble","ar":"…"}]. If there is no text reply with [].';
+}
+
+function parseList(text){
+  const a = text.indexOf('['), b = text.lastIndexOf(']');
+  if (a < 0 || b <= a) return [];
+  const v = JSON.parse(text.slice(a, b + 1));
+  return Array.isArray(v) ? v : [];
+}
+
+function blobToB64(blob){
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+
+async function ask(blob, signal){
+  const prompt = buildPrompt();
+  if (mode === 'artifact') {
+    const r = await sample(prompt, {images: [blob], modelTier: 'default', signal});
+    return r.text || '';
+  }
+  const r = await api('api/translate', {method: 'POST', signal, headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt, image: await blobToB64(blob)})});
+  return (await r.json()).text || '';
+}
+
+// returns number of bubbles; throws {fatal:true} when the whole run should stop
+async function translateSlice(slice, signal){
+  slice.el.classList.add('working');
+  const old = slice.el.querySelector('.retry'); if (old) old.remove();
+  try {
+    let text;
+    try { text = await ask(slice.blob, signal); }
+    catch (e) {
+      if (e && e.code === 'rate_limited' && !signal.aborted) { setStatus('ضغط على الخدمة، أنتظر قليلاً…'); await sleep(9000); text = await ask(slice.blob, signal); }
+      else throw e;
+    }
+    return renderBubbles(slice, parseList(text));
+  } catch (e) {
+    if (signal.aborted) throw e;
+    if (e && (e.code === 'not_granted' || e.code === 'rate_limited')) { e.fatal = true; throw e; }
+    const b = document.createElement('button'); b.className = 'retry'; b.textContent = 'فشلت هذه القطعة. أعد المحاولة';
+    b.onclick = async () => { const c = new AbortController(); try { await translateSlice(slice, c.signal); } catch (x) {} };
+    slice.el.append(b);
+    slice.failed = true;
+    return 0;
+  } finally { slice.el.classList.remove('working'); }
+}
+
+async function run(){
+  if (busy) return;
+  setStatus('جاري التجهيز…');
+  await ready;
+  const isLink = tab === 'link';
+  let jobs = [];
+  try {
+    if (isLink) {
+      if (mode !== 'server') { setStatus('وضع الرابط يشتغل على النسخة المستضافة فقط. استخدم «رفع صور» هنا.', 'err'); return; }
+      const u = $('#url').value.trim();
+      if (!/^https?:\/\//i.test(u)) { setStatus('اكتب رابطاً كاملاً يبدأ بـ https://', 'err'); return; }
+      setStatus('جاري جلب صفحة الفصل…');
+      const j = await (await api('api/extract?url=' + enc(u))).json();
+      if (!j.images || !j.images.length) { setStatus('ما لقيت صور بهذي الصفحة. الموقع ممكن يحمّل الصور بالجافاسكربت أو يحظر السحب. جرّب «رفع صور».', 'err'); return; }
+      jobs = j.images.map(src => async () => (await api('api/img?url=' + enc(src) + '&ref=' + enc(u))).blob());
+    } else {
+      if (!picked.length) { setStatus('اختر صور الفصل أولاً.', 'err'); return; }
+      jobs = picked.map(f => async () => f);
+    }
+    if (mode === 'artifact' && !sample) { setStatus('الترجمة غير متاحة بهذا العرض. افتح الصفحة من حسابك في Claude.', 'err'); return; }
+    if (mode === 'server' && !serverCanTranslate) { setStatus('السيرفر بدون مفتاح API. ضع ANTHROPIC_API_KEY في server.py.', 'err'); return; }
+    if (mode === 'none') { setStatus('الترجمة تحتاج فتح الصفحة داخل Claude أو من السيرفر.', 'err'); return; }
+  } catch (e) { setStatus(e.message || 'صار خطأ', 'err'); return; }
+
+  busy = true; abortCtl = new AbortController(); const signal = abortCtl.signal;
+  const reader = $('#reader');
+  reader.querySelectorAll('img').forEach(i => URL.revokeObjectURL(i.src));
+  reader.innerHTML = ''; reader.classList.remove('orig');
+  $('#toggle').textContent = 'عرض الأصل'; $('#toggle').setAttribute('aria-pressed', 'false');
+  $('#dock').hidden = false; $('#stop').hidden = false; $('#go').disabled = true;
+  let bubbles = 0, failed = 0, pages = 0, fatal = null;
+  try {
+    for (let i = 0; i < jobs.length && !signal.aborted; i++) {
+      setStatus(`الصورة ${i + 1} من ${jobs.length}…`);
+      let img;
+      try { img = await loadImg(await jobs[i]()); }
+      catch (e) { if (!isLink) failed++; continue; }
+      if (isLink && (img.naturalWidth < 350 || img.naturalHeight < 300)) { URL.revokeObjectURL(img.src); continue; }
+      pages++;
+      for (const cut of planCuts(img)) {
+        if (signal.aborted) break;
+        const slice = await makeSlice(img, cut);
+        reader.append(slice.el);
+        bubbles += await translateSlice(slice, signal);
+        if (slice.failed) failed++;
+      }
+      URL.revokeObjectURL(img.src);
+    }
+  } catch (e) { if (!signal.aborted) fatal = e; }
+  busy = false; $('#go').disabled = false; $('#stop').hidden = true;
+  if (fatal) setStatus(fatal.code === 'not_granted' ? 'لم يُسمح للصفحة باستخدام Claude، فتوقفت الترجمة.' : 'توقفت الترجمة: ' + (fatal.message || 'ضغط على الخدمة، جرّب بعد قليل'), 'err');
+  else if (signal.aborted) setStatus('تم الإيقاف. ' + bubbles + ' فقاعة مترجمة.');
+  else if (!pages) setStatus(isLink ? 'ما لقيت صور صفحات صالحة بهذا الرابط.' : 'تعذّر فتح الصور.', 'err');
+  else setStatus(`خلصت: ${pages} صورة، ${bubbles} فقاعة مترجمة` + (failed ? `، ${failed} قطعة فشلت` : '') + '. اضغط أي فقاعة لرؤية الأصل.', failed ? '' : 'ok');
+}
+$('#go').onclick = run;
+</script>
+</body>
+</html>
